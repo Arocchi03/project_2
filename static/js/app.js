@@ -7,7 +7,9 @@
 // for otu_ids - they are arrays.  There are corresponding sample_values and otu_labels
 //});
 // dataset already seems to be sorted by highest found to lowest by sample_values
-var airData = d3.csv("data/listings.csv");
+var airData = d3.json("http://127.0.0.1:5000/airbnb");
+var crimeData = d3.json("http://127.0.0.1:5000/crimes");
+
 // Get a reference to the table body
 var meta = d3.select("#sample-metadata");
 

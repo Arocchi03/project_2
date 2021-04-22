@@ -2,6 +2,7 @@
 # from sqlalchemy.ext.automap import automap_base
 # from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
+from flask_cors import CORS
 
 from flask import Flask, jsonify, Response
 import pandas as pd
@@ -22,6 +23,7 @@ engine = create_engine("sqlite:///data/crime_db.sqlite")
 
 # Flask set up
 app = Flask(__name__)
+CORS(app)
 
 
 # Routes
