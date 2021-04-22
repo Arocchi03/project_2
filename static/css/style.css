@@ -12,6 +12,17 @@ h3 {
 }
 
 /*
+ * test anime
+*/ 
+
+canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+
+/*
  * Base structure
  */
 
