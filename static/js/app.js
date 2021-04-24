@@ -7,7 +7,17 @@
 // for otu_ids - they are arrays.  There are corresponding sample_values and otu_labels
 //});
 // dataset already seems to be sorted by highest found to lowest by sample_values
+var neighborhood;
+
 var airData = d3.json("http://127.0.0.1:5000/airbnb");
+/*
+.then(function(data) {
+  //PUT BUILDDATA IN HERE
+  buildPage(data);
+  //console.log(data);
+});
+*/
+
 var crimeData = d3.json("http://127.0.0.1:5000/crimes");
 
 // Get a reference to the table body
@@ -17,6 +27,16 @@ var list = d3.select("#listings");
 // Select the button
 var form = d3.select("#selDataset");
 //metaId = [];
+
+//Map stuff
+var myMap = L.map("map", {
+  center: [41.881832, -87.623177],
+  zoom: 11
+});
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(myMap);
 
 function onlyUnique(value, index, self){
   return self.indexOf(value) === index;
@@ -34,6 +54,7 @@ function average(arr) {
 
 function optionChanged(val) {
   console.log("new neighborhood: " + val);
+  neighborhood = val;
   buildPage(val);
 };
 
@@ -44,6 +65,7 @@ function initSelect(indata){
   var selections = [];
   for ( var j = 0 ; j < indata.length; j++) {
     selections.push(indata[j].neighbourhood);
+    console.log(indata[j].neighbourhood);
   }
   var unique = selections.filter(onlyUnique);
   console.log(unique);
@@ -230,14 +252,13 @@ function buildGuage(count){
 }
 
 function buildPage(id){
-  airData.then((samples) => {
-    //console.log(samples);
-    console.log(samples);
+  airData.then((data) => {
     var countlist = 0;
     if(id == 0){
       // this is the initial page load
       // buildTop Ten Plot
       console.log("hitting init page");
+      console.log(airData);
       //buildTopTenPlot(samples.samples[0]);
       //build scatter plot
       //buildScatterPlot(samples.samples[0]);
@@ -246,7 +267,7 @@ function buildPage(id){
       //Build select
       //neighborhood = ["Beverly", "Gold Coast", "Downtown"];
       //initSelect(neighborhood);
-      initSelect(samples);
+      initSelect(data);
       //build guage
       //buildGuage(samples.metadata[0])
     }
@@ -259,21 +280,21 @@ function buildPage(id){
       tempMinNights = [];
       tempLat = [];
       tempLong = [];
-      for ( var i = 0 ; i < samples.length; i++) {
+      for ( var i = 0 ; i < data.length; i++) {
         //if (samples.metadata[i].id === id){
         //  console.log("Building metadata");
         //  buildTable(samples.metadata[i]);
         //}
-        if(samples[i].neighbourhood === id){
+        if(data[i].neighbourhood === neighborhood){
           countlist = countlist+1;
-          tempId.push(samples[i].id);
-          tempNames.push(samples[i].name);
-          tempPrice.push(samples[i].price);
-          tempRoomType.push(samples[i].room_type);
-          tempAvail.push(samples[i].availability_365);
-          tempMinNights.push(samples[i].minimum_nights);
-          tempLat.push(samples[i].latitude);
-          tempLong.push(samples[i].longitude);
+          tempId.push(data[i].id);
+          tempNames.push(data[i].name);
+          tempPrice.push(data[i].price);
+          tempRoomType.push(data[i].room_type);
+          tempAvail.push(data[i].availability_365);
+          tempMinNights.push(data[i].minimum_nights);
+          tempLat.push(data[i].latitude);
+          tempLong.push(data[i].longitude);
           console.log("building plots")
           //console.log(samples[i]);
         }
@@ -286,7 +307,7 @@ function buildPage(id){
     }
     
   });
-};
+}
 
 buildPage(0);
 //Create a horizontal bar chart with a dropdown menu to display the top 10 OTUs found in that individual
