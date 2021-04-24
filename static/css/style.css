@@ -11,6 +11,25 @@ h3 {
     background-image: url('../../images/chicago1.jpg');
 }
 
+#map { 
+  height: 500px;
+  width: 50%;
+  margin: auto;
+  margin-bottom: 20px;
+  }
+
+
+/*
+ * test anime
+*/ 
+
+canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+
 /*
  * Base structure
  */

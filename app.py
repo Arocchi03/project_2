@@ -5,6 +5,7 @@ from sqlalchemy import create_engine, func
 
 from flask import Flask, jsonify, Response
 import pandas as pd
+from flask_cors import CORS
 
 # Data base set up
 engine = create_engine("sqlite:///data/crime_db.sqlite")
@@ -22,6 +23,8 @@ engine = create_engine("sqlite:///data/crime_db.sqlite")
 
 # Flask set up
 app = Flask(__name__)
+CORS(app)
+
 
 
 # Routes

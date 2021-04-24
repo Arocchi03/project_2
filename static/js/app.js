@@ -1,20 +1,14 @@
 //Use the D3 library to read in samples.json.
-//console.log(JSON.stringify("../../data/samples.json"));
-//d3.json("data/samples.json").then((samples) => {
-  //  Create the Traces
-//  console.log(samples);
-// there are 153 samples
-// for otu_ids - they are arrays.  There are corresponding sample_values and otu_labels
-//});
-// dataset already seems to be sorted by highest found to lowest by sample_values
-var airData = d3.csv("data/listings.csv");
+var neighborhood;
+
+var airData = d3.json("http://127.0.0.1:5000/airbnb");
+var crimeData = d3.json("http://127.0.0.1:5000/crimes");
+
 // Get a reference to the table body
 var meta = d3.select("#sample-metadata");
-
 var list = d3.select("#listings");
-// Select the button
 var form = d3.select("#selDataset");
-//metaId = [];
+
 
 function onlyUnique(value, index, self){
   return self.indexOf(value) === index;
@@ -32,6 +26,7 @@ function average(arr) {
 
 function optionChanged(val) {
   console.log("new neighborhood: " + val);
+  neighborhood = val;
   buildPage(val);
 };
 
@@ -42,9 +37,10 @@ function initSelect(indata){
   var selections = [];
   for ( var j = 0 ; j < indata.length; j++) {
     selections.push(indata[j].neighbourhood);
+    //console.log(indata[j].neighbourhood);
   }
   var unique = selections.filter(onlyUnique);
-  console.log(unique);
+  //console.log(unique);
   unique.sort();
   for ( var k = 0 ; k < unique.length; k++) {
     //metaId.push(otuData.metadata[j].id);
@@ -196,7 +192,7 @@ function buildScatterPlot(id, price, lat, long) {
 };
 
 function buildGuage(count){
-  //console.log(sampleid);
+  
   var data3 = [
     {
       type: "indicator",
@@ -227,15 +223,52 @@ function buildGuage(count){
   Plotly.newPlot('gauge', data3, layout);
 }
 
+
+var map = L.map("map", {center: [41.881832, -87.623177], zoom: 11 });
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "© OpenStreetMap",
+  }
+).addTo(map);
+
+// var markerLayer = L.layerGroup([littleton, denver, aurora, golden]);
+
+
+  function outlineMap () {
+    d3.json("https://data.cityofchicago.org/resource/igwz-8jzy.json").then(function(data3){
+      data3.map(function(data) {
+        data.type = "Feature";
+        data.geometry = data.the_geom;
+        data.properties = {
+          name: data.community,
+          popupContent: data.community
+        };
+    });
+
+    L.geoJSON(data3, {
+      style: {
+        color: "white",
+        fillColor: "purple",
+        fillOpacity: 0.5,
+        weight: 1.5
+      }}).addTo(map);
+
+    console.log("here! ", data3);
+  })};
+
+
+  function addMarkers() {
+    var markerLayer = L.layerGroup([littleton, denver, aurora, golden]);
+    }
+
+
 function buildPage(id){
-  airData.then((samples) => {
-    //console.log(samples);
-    console.log(samples);
+  airData.then((data) => {
     var countlist = 0;
     if(id == 0){
       // this is the initial page load
       // buildTop Ten Plot
       console.log("hitting init page");
+      console.log(airData);
       //buildTopTenPlot(samples.samples[0]);
       //build scatter plot
       //buildScatterPlot(samples.samples[0]);
@@ -244,9 +277,7 @@ function buildPage(id){
       //Build select
       //neighborhood = ["Beverly", "Gold Coast", "Downtown"];
       //initSelect(neighborhood);
-      initSelect(samples);
-      //build guage
-      //buildGuage(samples.metadata[0])
+      initSelect(data);
     }
     else{
       tempId = [];
@@ -257,53 +288,39 @@ function buildPage(id){
       tempMinNights = [];
       tempLat = [];
       tempLong = [];
-      for ( var i = 0 ; i < samples.length; i++) {
-        //if (samples.metadata[i].id === id){
-        //  console.log("Building metadata");
-        //  buildTable(samples.metadata[i]);
-        //}
-        if(samples[i].neighbourhood === id){
+      markers = [];
+      for ( var i = 0 ; i < data.length; i++) {
+        
+        if(data[i].neighbourhood === neighborhood){
           countlist = countlist+1;
-          tempId.push(samples[i].id);
-          tempNames.push(samples[i].name);
-          tempPrice.push(samples[i].price);
-          tempRoomType.push(samples[i].room_type);
-          tempAvail.push(samples[i].availability_365);
-          tempMinNights.push(samples[i].minimum_nights);
-          tempLat.push(samples[i].latitude);
-          tempLong.push(samples[i].longitude);
+          tempId.push(data[i].id);
+          tempNames.push(data[i].name);
+          tempPrice.push(data[i].price);
+          tempRoomType.push(data[i].room_type);
+          tempAvail.push(data[i].availability_365);
+          tempMinNights.push(data[i].minimum_nights);
+          tempLat.push(data[i].latitude);
+          tempLong.push(data[i].longitude);
+          map.setView([tempLat[0], tempLong[0]], 13)
           console.log("building plots")
-          //console.log(samples[i]);
+          markers.push([data[i].name,data[i].latitude, data[i].longitude])
+          
         }
       }
       buildTable(tempAvail, tempMinNights, tempPrice);
       buildListingTable(tempId, tempNames, tempPrice)
       buildGuage(countlist);
       buildTopTenPlot(tempId, tempPrice);
-      buildScatterPlot(tempId, tempPrice, tempLat, tempLong)
+      buildScatterPlot(tempId, tempPrice, tempLat, tempLong);
+      outlineMap();
+      console.log(markers)
+      for (var i = 0; i < markers.length; i++) {
+        marker = new L.marker([markers[i][1], markers[i][2]])
+          .bindPopup(markers[i][0])
+          .addTo(map);
     }
     
-  });
-};
+  };
+})};
 
 buildPage(0);
-//Create a horizontal bar chart with a dropdown menu to display the top 10 OTUs found in that individual
-//Use sample_values as the values for the bar chart.
-//Use otu_ids as the labels for the bar chart.
-//Use otu_labels as the hovertext for the chart.
-
-//Create a bubble chart that displays each sample.
-//Use otu_ids for the x values.
-//Use sample_values for the y values.
-//Use sample_values for the marker size.
-//Use otu_ids for the marker colors.
-//Use otu_labels for the text values.
-
-
-//Display the sample metadata, i.e., an individual's demographic information.
-
-
-//Display each key-value pair from the metadata JSON object somewhere on the page.
-
-
-//Update all of the plots any time that a new sample is selected.
