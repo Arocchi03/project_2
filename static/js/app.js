@@ -1,4 +1,5 @@
 //Use the D3 library to read in samples.json.
+
 var neighborhood;
 
 var airData = d3.json("http://127.0.0.1:5000/airbnb");
@@ -9,6 +10,16 @@ var meta = d3.select("#sample-metadata");
 var list = d3.select("#listings");
 var form = d3.select("#selDataset");
 
+
+//Map stuff
+var myMap = L.map("map", {
+  center: [41.881832, -87.623177],
+  zoom: 11
+});
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(myMap);
 
 function onlyUnique(value, index, self){
   return self.indexOf(value) === index;
@@ -37,7 +48,9 @@ function initSelect(indata){
   var selections = [];
   for ( var j = 0 ; j < indata.length; j++) {
     selections.push(indata[j].neighbourhood);
+
     //console.log(indata[j].neighbourhood);
+
   }
   var unique = selections.filter(onlyUnique);
   //console.log(unique);
@@ -295,7 +308,9 @@ function buildPage(id){
       // this is the initial page load
       // buildTop Ten Plot
       console.log("hitting init page");
+
       //console.log(airData);
+
       //buildTopTenPlot(samples.samples[0]);
       //build scatter plot
       //buildScatterPlot(samples.samples[0]);
@@ -305,6 +320,8 @@ function buildPage(id){
       //neighborhood = ["Beverly", "Gold Coast", "Downtown"];
       //initSelect(neighborhood);
       initSelect(data);
+
+
     }
     else{
       tempId = [];
@@ -318,7 +335,7 @@ function buildPage(id){
       markers = [];
       crimemarkers = [];
       for ( var i = 0 ; i < data.length; i++) {
-      
+
         if(data[i].neighbourhood === neighborhood){
           countlist = countlist+1;
           tempId.push(data[i].id);
@@ -329,6 +346,7 @@ function buildPage(id){
           tempMinNights.push(data[i].minimum_nights);
           tempLat.push(data[i].latitude);
           tempLong.push(data[i].longitude);
+
           map.setView([tempLat[0], tempLong[0]], 13)
           console.log("building plots")
           markers.push([data[i].name,data[i].latitude, data[i].longitude])

@@ -7,6 +7,9 @@ from flask import Flask, jsonify, Response
 import pandas as pd
 from flask_cors import CORS
 
+from flask import Flask, jsonify, Response
+import pandas as pd
+
 # Data base set up
 engine = create_engine("sqlite:///data/crime_db.sqlite")
 
@@ -61,7 +64,7 @@ def crimes():
     SELECT c.*, a.community_name FROM crimes as c 
     JOIN comm_areas as a 
     ON c.community_area = a.community_id
-    WHERE c.primary_type = "ARSON";
+    WHERE primary_type = "ARSON";
     """, engine)  
 
 #     # Query for Crime data
