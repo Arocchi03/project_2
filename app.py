@@ -61,7 +61,7 @@ def crimes():
     SELECT c.*, a.community_name FROM crimes as c 
     JOIN comm_areas as a 
     ON c.community_area = a.community_id
-    WHERE primary_type = "ARSON";
+    WHERE c.primary_type = "ARSON";
     """, engine)  
 
 #     # Query for Crime data

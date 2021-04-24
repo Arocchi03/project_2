@@ -252,13 +252,40 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         weight: 1.5
       }}).addTo(map);
 
-    console.log("here! ", data3);
+    // console.log("here! ", data3);
   })};
 
 
   function addMarkers() {
-    var markerLayer = L.layerGroup([littleton, denver, aurora, golden]);
-    }
+    for (var i = 0; i < markers.length; i++) {
+      marker = new L.marker([markers[i][1], markers[i][2]])
+        .bindPopup(markers[i][0])
+        .addTo(map);
+    }}
+console.log(crimeData)
+
+  function addCrimeMarkers(neighborhood) {
+    crimeData.then((crimeData) => {
+    crimemarkers = [];
+    for (var i = 0 ; i < crimeData.length; i++) {
+      if(crimeData[i].community_name === neighborhood){
+        crimemarkers.push([crimeData[i].primary_type,crimeData[i].lat, crimeData[i].lng])}}
+    console.log(crimemarkers)
+
+    var redIcon = new L.Icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+    for (var i = 0; i < crimemarkers.length; i++) {
+      marker = new L.marker([crimemarkers[i][1], crimemarkers[i][2]], {icon: redIcon})
+        .bindPopup(crimemarkers[i][0])
+        .addTo(map);}
+    })};
+
 
 
 function buildPage(id){
@@ -268,7 +295,7 @@ function buildPage(id){
       // this is the initial page load
       // buildTop Ten Plot
       console.log("hitting init page");
-      console.log(airData);
+      //console.log(airData);
       //buildTopTenPlot(samples.samples[0]);
       //build scatter plot
       //buildScatterPlot(samples.samples[0]);
@@ -289,8 +316,9 @@ function buildPage(id){
       tempLat = [];
       tempLong = [];
       markers = [];
+      crimemarkers = [];
       for ( var i = 0 ; i < data.length; i++) {
-        
+      
         if(data[i].neighbourhood === neighborhood){
           countlist = countlist+1;
           tempId.push(data[i].id);
@@ -313,14 +341,10 @@ function buildPage(id){
       buildTopTenPlot(tempId, tempPrice);
       buildScatterPlot(tempId, tempPrice, tempLat, tempLong);
       outlineMap();
+      addMarkers();
+      addCrimeMarkers(neighborhood);
       console.log(markers)
-      for (var i = 0; i < markers.length; i++) {
-        marker = new L.marker([markers[i][1], markers[i][2]])
-          .bindPopup(markers[i][0])
-          .addTo(map);
     }
-    
-  };
 })};
 
 buildPage(0);
