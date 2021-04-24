@@ -1,32 +1,15 @@
 //Use the D3 library to read in samples.json.
-//console.log(JSON.stringify("../../data/samples.json"));
-//d3.json("data/samples.json").then((samples) => {
-  //  Create the Traces
-//  console.log(samples);
-// there are 153 samples
-// for otu_ids - they are arrays.  There are corresponding sample_values and otu_labels
-//});
-// dataset already seems to be sorted by highest found to lowest by sample_values
+
 var neighborhood;
 
 var airData = d3.json("http://127.0.0.1:5000/airbnb");
-/*
-.then(function(data) {
-  //PUT BUILDDATA IN HERE
-  buildPage(data);
-  //console.log(data);
-});
-*/
-
 var crimeData = d3.json("http://127.0.0.1:5000/crimes");
 
 // Get a reference to the table body
 var meta = d3.select("#sample-metadata");
-
 var list = d3.select("#listings");
-// Select the button
 var form = d3.select("#selDataset");
-//metaId = [];
+
 
 //Map stuff
 var myMap = L.map("map", {
@@ -65,10 +48,12 @@ function initSelect(indata){
   var selections = [];
   for ( var j = 0 ; j < indata.length; j++) {
     selections.push(indata[j].neighbourhood);
-    console.log(indata[j].neighbourhood);
+
+    //console.log(indata[j].neighbourhood);
+
   }
   var unique = selections.filter(onlyUnique);
-  console.log(unique);
+  //console.log(unique);
   unique.sort();
   for ( var k = 0 ; k < unique.length; k++) {
     //metaId.push(otuData.metadata[j].id);
@@ -220,7 +205,7 @@ function buildScatterPlot(id, price, lat, long) {
 };
 
 function buildGuage(count){
-  //console.log(sampleid);
+  
   var data3 = [
     {
       type: "indicator",
@@ -251,6 +236,71 @@ function buildGuage(count){
   Plotly.newPlot('gauge', data3, layout);
 }
 
+
+var map = L.map("map", {center: [41.881832, -87.623177], zoom: 11 });
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "© OpenStreetMap",
+  }
+).addTo(map);
+
+// var markerLayer = L.layerGroup([littleton, denver, aurora, golden]);
+
+
+  function outlineMap () {
+    d3.json("https://data.cityofchicago.org/resource/igwz-8jzy.json").then(function(data3){
+      data3.map(function(data) {
+        data.type = "Feature";
+        data.geometry = data.the_geom;
+        data.properties = {
+          name: data.community,
+          popupContent: data.community
+        };
+    });
+
+    L.geoJSON(data3, {
+      style: {
+        color: "white",
+        fillColor: "purple",
+        fillOpacity: 0.5,
+        weight: 1.5
+      }}).addTo(map);
+
+    // console.log("here! ", data3);
+  })};
+
+
+  function addMarkers() {
+    for (var i = 0; i < markers.length; i++) {
+      marker = new L.marker([markers[i][1], markers[i][2]])
+        .bindPopup(markers[i][0])
+        .addTo(map);
+    }}
+console.log(crimeData)
+
+  function addCrimeMarkers(neighborhood) {
+    crimeData.then((crimeData) => {
+    crimemarkers = [];
+    for (var i = 0 ; i < crimeData.length; i++) {
+      if(crimeData[i].community_name === neighborhood){
+        crimemarkers.push([crimeData[i].primary_type,crimeData[i].lat, crimeData[i].lng])}}
+    console.log(crimemarkers)
+
+    var redIcon = new L.Icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+    for (var i = 0; i < crimemarkers.length; i++) {
+      marker = new L.marker([crimemarkers[i][1], crimemarkers[i][2]], {icon: redIcon})
+        .bindPopup(crimemarkers[i][0])
+        .addTo(map);}
+    })};
+
+
+
 function buildPage(id){
   airData.then((data) => {
     var countlist = 0;
@@ -258,7 +308,9 @@ function buildPage(id){
       // this is the initial page load
       // buildTop Ten Plot
       console.log("hitting init page");
-      console.log(airData);
+
+      //console.log(airData);
+
       //buildTopTenPlot(samples.samples[0]);
       //build scatter plot
       //buildScatterPlot(samples.samples[0]);
@@ -268,8 +320,8 @@ function buildPage(id){
       //neighborhood = ["Beverly", "Gold Coast", "Downtown"];
       //initSelect(neighborhood);
       initSelect(data);
-      //build guage
-      //buildGuage(samples.metadata[0])
+
+
     }
     else{
       tempId = [];
@@ -280,11 +332,10 @@ function buildPage(id){
       tempMinNights = [];
       tempLat = [];
       tempLong = [];
+      markers = [];
+      crimemarkers = [];
       for ( var i = 0 ; i < data.length; i++) {
-        //if (samples.metadata[i].id === id){
-        //  console.log("Building metadata");
-        //  buildTable(samples.metadata[i]);
-        //}
+
         if(data[i].neighbourhood === neighborhood){
           countlist = countlist+1;
           tempId.push(data[i].id);
@@ -295,38 +346,23 @@ function buildPage(id){
           tempMinNights.push(data[i].minimum_nights);
           tempLat.push(data[i].latitude);
           tempLong.push(data[i].longitude);
+
+          map.setView([tempLat[0], tempLong[0]], 13)
           console.log("building plots")
-          //console.log(samples[i]);
+          markers.push([data[i].name,data[i].latitude, data[i].longitude])
+          
         }
       }
       buildTable(tempAvail, tempMinNights, tempPrice);
       buildListingTable(tempId, tempNames, tempPrice)
       buildGuage(countlist);
       buildTopTenPlot(tempId, tempPrice);
-      buildScatterPlot(tempId, tempPrice, tempLat, tempLong)
+      buildScatterPlot(tempId, tempPrice, tempLat, tempLong);
+      outlineMap();
+      addMarkers();
+      addCrimeMarkers(neighborhood);
+      console.log(markers)
     }
-    
-  });
-}
+})};
 
 buildPage(0);
-//Create a horizontal bar chart with a dropdown menu to display the top 10 OTUs found in that individual
-//Use sample_values as the values for the bar chart.
-//Use otu_ids as the labels for the bar chart.
-//Use otu_labels as the hovertext for the chart.
-
-//Create a bubble chart that displays each sample.
-//Use otu_ids for the x values.
-//Use sample_values for the y values.
-//Use sample_values for the marker size.
-//Use otu_ids for the marker colors.
-//Use otu_labels for the text values.
-
-
-//Display the sample metadata, i.e., an individual's demographic information.
-
-
-//Display each key-value pair from the metadata JSON object somewhere on the page.
-
-
-//Update all of the plots any time that a new sample is selected.
