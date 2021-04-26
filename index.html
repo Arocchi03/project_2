@@ -46,15 +46,18 @@
         <div class="collapse navbar-collapse" id="navbarsExample02">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+              <a class="nav-link" href="./index.html">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
+              <a class="nav-link" target="_blank" href="https://www.airbnb.com/">Airbnb Site</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" href="https://data.cityofchicago.org/Public-Safety/Crimes-Map/dfnk-7re6">Chicago Crime Data</a>
             </li>
           </ul>
-          <form class="form-inline my-2 my-md-0">
+          <!--<form class="form-inline my-2 my-md-0">
             <input class="form-control" type="text" placeholder="Search">
-          </form>
+          </form>-->
         </div>
     </nav>
 
@@ -63,9 +66,9 @@
         <div class="col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">Crime Reports</a></li>
+            <!--<li><a href="#">Crime Reports</a></li>
             <li><a href="#">Api Data</a></li>
-            <li><a href="./testanime.html">Test Anime</a></li>
+            <li><a href="./testanime.html">Test Anime</a></li>-->
           </ul>
           <div class="well">
             <h5>Select Neighborhood:</h5>
@@ -74,17 +77,22 @@
           <hr>
           <div class="panel panel-primary">
             <div class="panel-heading">
-              <h5 class="panel-title">Neighborhood Info</h5>
+              <h5 class="panel-title" id="dataLabel"></h5>
             </div>
             <div id="sample-metadata" class="panel-body">
               <!-- Metadata goes here -->
             </div>
-            <div id="gauge"></div>
+            <!--<div id="gauge"></div>-->
           </div>
         </div>
         <div class="col-md-10 offset-md-2 main">
           <h3 class="page-header">AirBnb Dashboard</h3>
-
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 placeholder">
+              <!--<h4>Bar Chart</h4>-->
+              <div id="map"></div>
+            </div>
+          </div>
           <div class="row">
             <div class="col-xs-6 col-sm-6 placeholder">
               <!--<h4>Bar Chart</h4>-->
@@ -115,8 +123,6 @@
         </div>
       </div>
     </div>
-
-    <div id="map"></div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
