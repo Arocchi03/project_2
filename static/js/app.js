@@ -194,7 +194,7 @@ function buildTable(avail, minday, price) {
       cell.text(str);
       var row2 = meta.append("tr");
       var cell2 = row2.append("td");
-      var str2 = "Average Availability: " + math.round(average(avail),2);
+      var str2 = "Average Availability (days): " + math.round(average(avail),2);
       cell2.text(str2);
       var row3 = meta.append("tr");
       var cell3 = row3.append("td");
@@ -202,7 +202,7 @@ function buildTable(avail, minday, price) {
       cell3.text(str3);
       var row4 = meta.append("tr");
       var cell4 = row4.append("td");
-      var str4 = "Average Price: " + math.round(average(price),2);
+      var str4 = "Average Price: $" + math.round(average(price),2);
       cell4.text(str4);
     //});
 };
@@ -299,7 +299,10 @@ function buildTopTenPlot(id, price) {
 
   // Apply the group bar mode to the layout
   var layout = {
-    title: "Top 10",
+    xaxis: {
+      title: 'Price ($)',
+    },
+    title: "Top 10 Listings by Price",
     height: 400,
     width: 500
   };
@@ -350,15 +353,23 @@ function buildScatterPlot(id, price, lat, long) {
       //sizemode: 'area'
       //size: [50, 100, 150, 200]
     },
-    name: "Price by Lat/Long"
+    name: "Price"
   };
 
    // data
    var data2 = [trace2];
 
    var layout = {
-     title: 'Price by Lat/Long',
+     title: 'Prices in Neighborhood',
      showlegend: false,
+     xaxis: {
+      showticklabels: false,
+      title: 'W-E',
+    },
+    yaxis: {
+      showticklabels: false,
+      title: 'N-S',
+    },
    };
  
    Plotly.newPlot("bubble", data2, layout);
