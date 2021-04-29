@@ -1,4 +1,4 @@
-//Use the D3 library to read in samples.json.
+
 
 //global of what neighborhood is selected
 var neighborhood;
@@ -16,28 +16,28 @@ var list = d3.select("#listings");
 var form = d3.select("#selDataset");
 var labelN = d3.select("#dataLabel");
 
-/*
+
 var granimInstance = new Granim({
-  element: ‘#granim-canvas’,
-  direction: ‘top-bottom’,
+  element: '#granim-canvas',
+  direction: 'top-bottom',
   isPausedWhenNotInView: true,
-  image : {
-    source: ‘img/chi_flag.png’,
-    blendingMode: ‘multiply’
-},
+//   image : {
+//     source: 'img/chi_flag.png',
+//     blendingMode: 'multiply'
+// },
   states : {
-      “default-state”: {
+      'default-state': {
           gradients: [
-              [‘#FF0000’, ‘#B3DDF2’],
-              [‘#B3DDF2’, ‘#0096FF’],
-              [‘#FF0000’, ‘#B3DDF2’],
-              [‘#B3DDF2’, ‘#0047AB’],
+              ['#FF0000', '#B3DDF2'],
+              ['#B3DDF2', '#0096FF'],
+              ['#FF0000', '#B3DDF2'],
+              ['#B3DDF2', '#0047AB'],
           ],
           transitionSpeed: 3000
       }
   }
 });
-*/
+
 
 //Map stuff
 var map = L.map("map", {center: [41.881832, -87.623177], zoom: 11 });
@@ -46,17 +46,6 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   }
 ).addTo(map);
 
-// var markerLayer = L.layerGroup([littleton, denver, aurora, golden]);
-/*
-var myMap = L.map("map", {
-  center: [41.881832, -87.623177],
-  zoom: 11
-});
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(myMap);
-*/
 
 function onlyUnique(value, index, self){
   return self.indexOf(value) === index;
@@ -153,8 +142,10 @@ var plotData = [{
 var layout = {
   title: "Number of Listings by Neighborhood",
   //legend: true,
-  height: 400,
-  width: 500
+  height: 500,
+  width: 600,
+  paper_bgcolor: "rgba(0,0,0,0)",
+  plot_bgcolor: "rgba(0,0,0,0)"
 };
 Plotly.newPlot("bar", plotData, layout);
 
@@ -249,7 +240,7 @@ function buildNewListingTable(inData, sortid) {
     sortedData = inData.sort();
   }
 
-  console.log(sortedData);
+  // console.log(sortedData);
   //});
   //var row = list.append("tr");
   //Object.entries(indata).forEach(([key, value]) => {
@@ -272,11 +263,7 @@ function buildTopTenPlot(id, price) {
   // Trace1 for the Data
   //bar.html("");
   var otuy = [];
-  //var otu = price.slice(0,10).reverse();
-  //var otu = inData.price.sort((a , b) => parseInt(b) - parseInt(a));
-  //for (var k=0; k< 10; k++) {
-  //otuy.push("ID-"+inData.id[k]);
-  //}
+
   var otu = price.sort((a , b) => b - a);
   for (var k=0; k< 10; k++) {
     otuy.push("ID-"+id[k]);
@@ -301,10 +288,13 @@ function buildTopTenPlot(id, price) {
   var layout = {
     xaxis: {
       title: 'Price ($)',
+      tickformat: "$"
     },
-    title: "Top 10 Listings by Price",
-    height: 400,
-    width: 500
+    title: "Top Listings by Price",
+    height: 500,
+    width: 700,
+    paper_bgcolor: "rgba(0,0,0,0)",
+    plot_bgcolor: "rgba(0,0,0,0)"
   };
 
 //console.log(samples.samples[0].otu_ids);
@@ -314,18 +304,13 @@ function buildTopTenPlot(id, price) {
 
 };
 
-function buildScatterPlot(id, price, lat, long) {
- // var divSize = sampleid.sample_values[0];
+function buildScatterPlot(id, price, reviews, avail) {
+ 
   var sizeref = 2.0 * price/ (80**2)
-  //var divColor = sampleid.otu_ids[0];
   var divColorLen = id.length;
   otuColor = [];
-  //sColor = 'rgb(93, 164, 214)';
- 
-  // picked 4 colors and adding based on otu
   
   for ( var i = 0 ; i < divColorLen; i++) {
-    //otuId.push(samples.samples[i].id);
     if (price[i] < 150){
       otuColor.push('rgb(93, 164, 214)');
     }
@@ -341,14 +326,15 @@ function buildScatterPlot(id, price, lat, long) {
   }
   
   var trace2 = {
-    y: long,
-    x: lat,
+    y: reviews,
+    x: avail,
     text: price,
     mode: 'markers+text',
     type: 'scatter',
+    color: otuColor,
     marker: {
       color: otuColor,
-      size: 15,
+      size: 25,
       //sizeref: sizeref,
       //sizemode: 'area'
       //size: [50, 100, 150, 200]
@@ -360,22 +346,78 @@ function buildScatterPlot(id, price, lat, long) {
    var data2 = [trace2];
 
    var layout = {
-     title: 'Prices in Neighborhood',
-     showlegend: false,
+     title: "Number of Reviews vs Availability",
      xaxis: {
-      showticklabels: false,
-      title: 'W-E',
+      // showticklabels: false,
+      title: "Availability (# Nights)",
     },
     yaxis: {
-      showticklabels: false,
-      title: 'N-S',
+      // showticklabels: false,
+      title: "# of Reviews",
+
     },
+    height: 500,
+    width: 700,
+    paper_bgcolor: "rgba(0,0,0,0)",
+    plot_bgcolor: "rgba(0,0,0,0)"
    };
  
    Plotly.newPlot("bubble", data2, layout);
  
-
 };
+
+
+
+
+// // function buildScatterPlot2() {
+// //   crimeData.then((crimeData) => {
+// //     countCrimes = [];
+// //     avgPrice = [];
+// //     for (var i = 0 ; i < crimeData.length; i++) {
+// //       crimemarkers.push([crimeData[i].primary_type,crimeData[i].lat, crimeData[i].lng])}}
+// //     console.log(crimemarkers))}
+  
+  
+//   var trace2 = {
+//     y: reviews,
+//     x: avail,
+//     text: price,
+//     mode: 'markers+text',
+//     type: 'scatter',
+//     marker: {
+//       color: otuColor,
+//       size: 25,
+//       //sizeref: sizeref,
+//       //sizemode: 'area'
+//       //size: [50, 100, 150, 200]
+//     },
+//     name: "Price"
+//   };
+
+//    // data
+//    var data2 = [trace2];
+
+//    var layout = {
+//      title: "Number of Reviews vs Booking Volume",
+//      // showlegend: false,
+//      xaxis: {
+//       // showticklabels: false,
+//       title: "Availability",
+//     },
+//     yaxis: {
+//       // showticklabels: false,
+//       title: "# of Reviews",
+//     },
+//    };
+ 
+//    Plotly.newPlot("bubble", data2, layout);
+ 
+// };
+
+
+
+
+
 
 function buildGuage(count){
   //console.log(sampleid);
@@ -480,6 +522,7 @@ function buildPage(id){
       //initSelect(data);
       buildNeighborhoodListingPiePlot(data);
       buildInitTable();
+      outlineMap();
       //build guage
     }
     else{
@@ -491,6 +534,7 @@ function buildPage(id){
       tempMinNights = [];
       tempLat = [];
       tempLong = [];
+      tempReviews = [];
       markers = [];
       crimemarkers = [];
       for ( var i = 0 ; i < data.length; i++) {
@@ -504,9 +548,9 @@ function buildPage(id){
           tempMinNights.push(data[i].minimum_nights);
           tempLat.push(data[i].latitude);
           tempLong.push(data[i].longitude);
-          console.log("building plots")
-          map.setView([tempLat[0], tempLong[0]], 13)
-          console.log("building plots")
+          tempReviews.push(data[i].number_of_reviews);
+          console.log("building plots");
+          map.setView([tempLat[0], tempLong[0]], 14)
           markers.push([data[i].name,data[i].latitude, data[i].longitude])
         }
       }
@@ -514,10 +558,10 @@ function buildPage(id){
       //buildListingTable(tempId, tempNames, tempPrice);
       //buildGuage(countlist);
       buildTopTenPlot(tempId, tempPrice);
-      buildScatterPlot(tempId, tempPrice, tempLat, tempLong);
+      //buildScatterPlot(tempId, tempPrice, tempLat, tempLong);
+      buildScatterPlot(tempId, tempPrice, tempReviews, tempAvail);
       var filteredData = data.filter(d => d.neighbourhood === id);
       buildNewListingTable(filteredData, 0);
-      outlineMap();
       addMarkers();
       addCrimeMarkers(neighborhood);
       console.log(markers)
