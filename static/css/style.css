@@ -9,7 +9,6 @@ h3 {
 
 #map { 
   height: 500px;
-  width: 50%;
   margin: auto;
   margin-bottom: 20px;
   }
@@ -26,6 +25,16 @@ h3 {
     left: 0;
     opacity: 25%;
   }
+
+  /* #bubble {
+    width: 700px;
+    height: 500px;
+  }
+
+  #bar {
+    width: 700px;
+    height: 500px;
+  } */
 
 /*
  * Base structure
@@ -128,8 +137,8 @@ body {
   .placeholder {
     margin-bottom: 20px;
   }
-  .placeholder img {
+  /* .placeholder img {
     display: inline-block;
     border-radius: 50%;
-  }
+  } */
 

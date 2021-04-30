@@ -10,6 +10,7 @@ from flask_cors import CORS
 from flask import Flask, jsonify, Response
 import pandas as pd
 
+
 # Data base set up
 engine = create_engine("sqlite:///data/crime_db.sqlite")
 
